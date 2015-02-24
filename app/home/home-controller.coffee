@@ -1,14 +1,13 @@
 class HomeController
   constructor: ($cookies, $location, DeviceService, TriggerService) ->
     @cookies = $cookies
+    @cookies.uuid = 'e9f43a10-bc75-11e4-a7c8-ff1cd8e84559'
+    @cookies.token = '2248a80db251c8a7e673e7086b3835d95939907a'
     @location = $location
     @DeviceService = DeviceService
     @TriggerService = TriggerService
     @colorIndex = 0
     @randomRobotId = _.sample [1...9]
-
-    return @location.path('/') unless @cookies.uuid
-    return @redirectToLogin() unless @cookies.token
 
     devicePromise = @DeviceService.getDevice(@cookies.uuid, @cookies.token)
     devicePromise.catch @redirectToLogin
@@ -18,10 +17,6 @@ class HomeController
 
       @refreshTriggers().catch (error) =>
         @errorMessage = error.message
-
-
-  redirectToLogin: =>
-    @location.path "/#{@cookies.uuid}/login"
 
   refreshTriggers: =>
     @TriggerService.getTriggers(@cookies.uuid, @cookies.token, @device.owner).then (@triggers) =>
